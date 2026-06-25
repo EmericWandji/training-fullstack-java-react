@@ -1,97 +1,135 @@
-# 📖 Semaine 1 : Fondations Java & Architecture Mentale
+# 📖 Module 1 : Fondations Java Moderne (17/21), Architecture Mémoire & POO
 
-## 🎯 Objectif Neuro-Pédagogique
-> **Démonter la boîte noire.** À la fin de ces 5 jours, vous ne subirez plus la syntaxe de Java. Vous comprendrez exactement comment les objets interagissent, comment la mémoire se fragmente et comment structurer votre pensée pour concevoir des systèmes professionnels.
+## 🎯 Objectif Pédagogique
+> **Démonter la boîte noire.** À la fin de ce premier module, vous saurez exactement ce qui se passe dans la mémoire de votre ordinateur (Stack & Heap) lorsque vous manipulez des données, et comment utiliser Java 17/21 pour écrire un code clair, sécurisé et sans lignes inutiles.
 
 ---
 
-## 🏢 La Métaphore Ancres : L'Écosystème de l'Entreprise
+## 🏢 L'Analogie Principale : L'Écosystème de l'Entreprise
 
-Pour éviter le piège de l'apprentissage par cœur, associons chaque concept technique abstrait à une structure physique que votre cerveau connaît déjà : **Une Entreprise**.
+Pour comprendre la Programmation Orientée Objet (POO) simplement, projetons le code dans un univers concret : **Le fonctionnement d'une entreprise.**
 
+`[ Fiche de Poste (Classe) ] ──(Recrutement: new)──► [ Employé Réel (Objet en Heap) ]`
 
 ### 1. La Classe vs L'Objet
-* **La Classe (`Fiche de Poste`) :** C'est un document papier. Il définit le profil d'un "Vendeur" (son nom, son salaire, et le fait qu'il sait "signer un contrat"). La fiche de poste ne produit rien d'elle-même, c'est un modèle abstrait.
-* **L'Objet (`L'Employé en chair et en os`) :** C'est l'action d'instancier. Lorsque vous recrutez Thomas avec le mot-clé `new Vendeur()`, vous créez une entité réelle en mémoire qui occupe un bureau, possède son propre nom et signe des contrats en suivant la fiche de poste.
+* **La Classe (`La Fiche de Poste`) :** C'est un plan écrit. Il définit les informations d'un "Développeur" (Nom, Compétence) et ses actions (méthode `coder()`). La fiche de poste ne produit rien seule.
+* **L'Objet (`L'Employé en chair et en os`) :** C'est l'action concrète. Quand vous écrivez `Developpeur dev = new Developpeur("Emeric");`, vous recrutez une personne réelle. Elle consomme de l'espace physique (la mémoire), possède ses propres valeurs et s'exécute.
 
-### 2. L'Encapsulation (Le Bureau Privé)
-Dans une entreprise saine, un manager ne va pas fouiller directement dans le portefeuille d'un commercial pour y prendre de l'argent. Le portefeuille est `private`. Pour obtenir une information, le manager appelle une méthode publique : `commercial.getChiffreAffaires()`. 
-> **Règle d'or :** L'état interne d'un objet doit toujours être protégé des agressions extérieures.
+### 2. Les Records (Le Formulaire Officiel Scellé) - *Java 16+*
+Souvent, on manipule des reçus ou des fiches d'information qui ne doivent jamais être modifiés après leur création. Avant, cela demandait beaucoup de code (getters, equals, hashCode). 
+Aujourd'hui, on utilise un **Record**. C'est un document scellé, nativement immuable :
 
-### 3. L'Héritage & Le Polymorphisme (L'Évolution des Postes)
-Vous créez un poste de "Vendeur International". Au lieu de réécrire toute sa fiche de poste, vous utilisez `extends Vendeur`. Il hérite automatiquement des compétences de base. 
+```java
+public record CarteMembre(String identifiant, LocalDate dateAdhesion) {}
+```
 
-Cependant, sa méthode `signerContrat()` est différente (elle gère les devises). En tant que Directeur (`Main`), vous pouvez avoir une liste d'employés mélangés (`List<Vendeur>`) et crier : *"Signez vos contrats !"*. Chaque employé s'exécutera selon sa propre implémentation (standard ou internationale). **C'est le polymorphisme.**
+> **Le Grand Avantage :** Votre code reste propre et va à l'essentiel. Le Record garantit l'intégrité de vos données sans effort supplémentaire.
 
----
+### 3. L'Encapsulation (La Protection des Données)
+Les informations internes d'un service sont verrouillées (`private`). Si l'extérieur veut interagir, il doit utiliser les guichets officiels (les méthodes publiques). Cela évite qu'une erreur venant d'ailleurs ne corrompe la logique de votre application.
 
-## 🧠 Carte Mentale des Notions Techniques
+### 4. Les Sealed Classes (La Hiérarchie Verrouillée) - *Java 17*
+Dans notre entreprise, seuls certains postes spécifiques ont le droit d'effectuer des opérations sensibles. On empêche la création de sous-catégories non contrôlées avec le mot-clé `sealed` :
 
-### Jours 1 & 2 : L'Architecture Orientée Objet
-* **Les Fondations :** Instanciation (`new`), l'autoréférence (`this`), et la mécanique des constructeurs.
-* **Les Niveaux d'Isolation :** `public`, `private`, `protected`, `package-private`. Choisir le plus restrictif par défaut.
-* **L'Immuabilité protectrice :** Utilisation de `final` pour graver des données dans le marbre et empêcher les effets de bord.
-* **Contrats d'Interfaces vs Classes Abstraites :** * *Interface* = Un contrat de service externe ("Cet objet sait *Imprimer*").
-    * *Classe Abstraite* = Une identité génétique partielle ("Cet objet *Est un* Animal").
+```java
+public sealed class PosteVendeur permits VendeurBoutique, VendeurEnLigne {}
+```
 
-### Jour 3 : Les Structures de Données & Flux (Le Cerveau Algorithmique)
-Pour bien choisir votre conteneur de données, vous devez comprendre sa mécanique d'accès :
-
-| Structure | Accès Mémoire (Lecture) | Doublons | Cas d'Usage Idéal |
-| :--- | :--- | :--- | :--- |
-| **`ArrayList`** | ⚡ Très rapide ($O(1)$ par index) | ✅ Autorisés | Liste de lecture, indexation fréquente |
-| **`LinkedList`** | 🐢 Lent (parcours séquentiel) | ✅ Autorisés | Insertions/Suppressions massives au milieu |
-| **`HashSet`** | ⚡ Très rapide ($O(1)$ via Hash) | ❌ Interdits | Vérifier l'unicité (ex: Liste d'identifiants) |
-| **`HashMap`** | ⚡ Éclair ($O(1)$ Clé -> Valeur) | Clés uniques | Dictionnaire, index de recherche rapide |
-
-* **L'API Streams (La Ligne d'Assemblage) :** Visualisez les Streams comme un tapis roulant d'usine. Les données défilent, subissent des filtres (`filter`), des transformations (`map`), puis sont emballées à la fin (`collect`).
-* **La Ceinture de Sécurité :** `Optional<T>` pour éradiquer définitivement les `NullPointerException`.
-
-### Jour 4 : La Gestion de la Mémoire (Sous le Capot)
-
-
-* **La `Stack` (Pile d'Exécution) :** Hyper rapide, de taille réduite. Elle stocke les variables locales et les adresses (références). Elle fonctionne en LIFO (Last In, First Out) et se nettoie instantanément dès qu'une méthode se termine.
-* **La `Heap` (Tas de Stockage) :** Grand espace partagé. C'est ici que vivent tous les objets créés avec `new`. 
-* **Le `Garbage Collector` :** Le concierge invisible de votre application. Si un objet en Heap n'est plus relié à aucune référence dans la Stack, il devient une cible et sa mémoire est libérée automatiquement.
-
-### Jour 5 : La Maîtrise de Git (La Machine à Remonter le Temps)
-* **Le Flux Tripartite :** Working Directory (votre espace de brouillon) ➔ Staging Area (le sas de préparation : `git add`) ➔ Local Repository (l'historique immuable : `git commit`).
-* **L'Art du Commit Chirurgical :** Un bon message utilise un verbe d'action à l'impératif : `Add user profile validation`, jamais `Fix bugs` ou `WIP`.
+> **À retenir :** Vous maîtrisez entièrement la structure de votre code. Personne ne peut étendre votre classe sans une autorisation explicite (`permits`).
 
 ---
 
-## 🥋 Dojo de Code Code-Actif : Le Système de Gestion de Bibliothèque
+## ⚡ Sous le Capot : Stack vs Heap (La Gestion de la Mémoire)
 
-> **Consigne Neuro-Pédagogique :** Ne copiez-collez rien. Tapez chaque caractère. L'action physique d'écrire du code renforce la mémoire procédurale.
+Java gère le stockage à travers deux zones distinctes. Comprendre cela permet d'éviter les bugs les plus fréquents.
 
-### 🧱 Phase 1 : Encapsulation stricte
-Créez les classes `Livre`, `Usager`, et `Bibliotheque`.
-* **Défi Cognitif :** Vos getters retournant des collections ne doivent jamais donner un accès direct à la structure interne. Utilisez impérativement `Collections.unmodifiableList(votreListe)` pour forcer l'étanchéité de vos objets.
+```text
+ VARIABLES LOCALES (Stack)             OBJETS RÉELS (Heap)
+┌─────────────────────────┐           ┌──────────────────────────────┐
+│ int age = 26;           │           │                              │
+│                         │           │  ┌────────────────────────┐  │
+│ Usager u1 ──────────────┼───────────┼─►│ Usager Object (Record) │  │
+│                         │           │  │ nom: "Emeric"          │  │
+│ Usager u2 ──────────────┼───────────┘  └────────────────────────┘  │
+└─────────────────────────┘           └──────────────────────────────┘
+```
 
-### 🧬 Phase 2 : Polymorphisme Appliqué
-Remplacez la classe `Livre` par une classe abstraite `Document` et créez trois spécialisations : `Livre`, `Audiobook`, `Magazine`.
-* Chaque sous-classe doit implémenter sa propre formule de calcul pour la méthode `calculerAmende(int joursRetard)`.
-* Dans votre classe de test, créez une `List<Document>` contenant un mélange des trois types et parcourez-la en observant comment Java sélectionne dynamiquement le bon calcul d'amende.
+### 🗂️ La Stack (La Pile d'Exécution)
+* **Nature :** Une structure ultra-rapide mais de petite taille.
+* **Ce qu'elle stocke :** Les variables simples (`int`, `double`, `boolean`) et les **adresses** (références) qui pointent vers la Heap.
+* **Comportement :** Dès qu'une méthode se termine, son espace dans la Stack est instantanément nettoyé.
 
-### 🌊 Phase 3 : Le Tapis Roulant (Streams)
-Dans la classe `Bibliotheque`, interdisez-vous l'utilisation des boucles `for` traditionnelles. Écrivez les algorithmes suivants exclusivement avec l'API Streams :
-* `rechercherParAuteur(String auteur)` (avec tolérance à la casse)
-* `statistiquesParGenre()` (Indice : Utilisez `Collectors.groupingBy(Document::getGenre, Collectors.counting())`)
-* `getTop3PlusEmpruntes()` (Trier et limiter le flux)
+### 🏜️ La Heap (Le Tas de Stockage)
+* **Nature :** Un immense espace partagé par toute l'application.
+* **Ce qu'elle stocke :** Tous les objets créés avec `new`, les instances de `Record`, et les textes (`String`).
+* **Comportement :** Les objets y restent tant qu'ils sont utilisés. Lorsqu'un objet est abandonné, le **Garbage Collector** (le nettoyeur de Java) vient le détruire pour libérer de la place.
 
-### 🚨 Phase 4 : Gestion Immersive des Crises (Exceptions)
-Définissez vos propres exceptions métiers héritant de `RuntimeException` (ex: `DocumentIndisponibleException`, `LimiteEmpruntDepasseeException`). 
-* Injectez de la logique de contrôle dans vos méthodes métiers. Le système doit lever une exception claire si un usager tente d'emprunter un 6ème document en simultané.
+### 🚨 Références vs Valeurs : Le Piège à Éviter
+
+```java
+// Primitifs : Copie de la valeur dans la Stack
+int x = 10;
+int y = x;
+y = 20; // x vaut toujours 10. Ils sont indépendants.
+
+// Objets : Copie de la RÉFÉRENCE (l'adresse) dans la Stack
+Usager u1 = new Usager("Emeric");
+Usager u2 = u1; 
+u2.setNom("Thomas");
+System.out.println(u1.getNom()); // 😱 Affiche "Thomas" !
+```
+
+> **L'explication visuelle :** `u1` et `u2` sont deux télécommandes distinctes situées dans la Stack, mais elles contrôlent la **même télévision** dans la Heap. Changer de chaîne avec `u2` modifie aussi l'écran pour `u1`.
 
 ---
 
-## 🏁 Auto-Évaluation Subliminale (Validez vos connexions)
+## 🔧 Les Pièges Courants et Leurs Solutions
 
-Si vous êtes capable de répondre sereinement à ces trois questions, votre ancrage est réussi :
-1.  *Si je modifie une collection renvoyée par un getter non protégé, qu'arrive-t-il à l'objet propriétaire ?*
-2.  *Pourquoi la concaténation de `String` dans une boucle `for` classique ($1000$ itérations) met-elle le Garbage Collector en surrégime ? (Pensez à l'immuabilité).*
-3.  *Quelle est la différence fondamentale entre la structure d'une `ArrayList` et celle d'une `LinkedList` en termes de disposition dans la Heap ?*
+| Le Bug / Symptôme | La Cause Réelle | La Solution Java 17/21 |
+| :--- | :--- | :--- |
+| `NullPointerException` | Une variable pointe vers le vide (`null`) et tente d'exécuter une action. | Utiliser `Optional<T>` ou le Pattern Matching pour valider proprement les données. |
+| Lenteurs sur les textes | Les `String` sont immuables. Concaténer dans une grande boucle crée d'innombrables objets qui saturent la Heap. | Utiliser les **Text Blocks** `"""` pour les textes fixes et **StringBuilder** pour les textes générés en boucle. |
+| `==` qui échoue sur des textes identiques | `==` compare uniquement les adresses dans la Stack, pas le contenu réel du texte. | Toujours utiliser `.equals()`. |
 
 ---
 
-## 🔧 Les Pièges À Éviter
+## 🥋 Dojo de Code : Le Système de Bibliothèque Moderne
+
+> **Consigne de Pratique :** Tapez chaque ligne vous-même. C'est l'action physique de coder qui transforme la syntaxe en un véritable automatisme.
+
+### 🏗️ Phase 1 : Architecture Robuste
+1. Créez un **Record** nommé `Usager` comprenant un identifiant, un nom et un email.
+2. Créez une classe abstraite et `sealed` nommée `Document`, autorisant (`permits`) uniquement `Livre`, `Audiobook`, et `Magazine`.
+3. Dans votre classe `Bibliotheque`, assurez-vous que les listes renvoyées utilisent `Collections.unmodifiableList()` pour bloquer toute modification externe.
+
+### 🧬 Phase 2 : Pattern Matching (Java 21)
+Dans votre calcul d'amendes, utilisez le **Pattern Matching pour switch** (Java 21). Plus besoin de tester le type avec des `if` complexes :
+
+```java
+public double calculerAmendeModerne(Document doc, int joursRetard) {
+    return switch (doc) {
+        case Livre l -> joursRetard * 0.5;
+        case Audiobook a -> joursRetard * 1.0;
+        case Magazine m -> joursRetard * 1.5;
+    }; 
+}
+```
+
+### 🌊 Phase 3 : Sequenced Collections & Flux
+Exploitez l'API Streams et les **Sequenced Collections** de Java 21 pour manipuler vos listes :
+* Utilisez `.stream().filter(...).toList()` pour trier vos données lisiblement.
+* Utilisez `catalogue.getFirst()` ou `catalogue.getLast()` pour accéder directement aux extrémités de vos listes sans calculer d'index.
+
+---
+
+## 🏁 Auto-Évaluation (Le Diagnostic Rapide)
+
+Prenez un instant pour valider ces acquis fondamentaux :
+
+1. *Pourquoi un Record est-il particulièrement fiable pour représenter de la donnée pure ?*
+2. *Grâce au mot-clé `sealed`, pourquoi un bloc `switch` moderne n'a plus besoin d'une clause `default` si toutes les sous-classes permises sont listées ?*
+3. *Quelle est la grande différence de durée de vie entre une variable stockée dans la Stack et un objet placé dans la Heap ?*
+
+---
+
+**[Retour à l'Accueil du README](../README.md) | [Passer au Module 2 : Data Streams & Pattern Matching →](./semaine-2.md)**
